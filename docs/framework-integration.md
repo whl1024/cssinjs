@@ -14,7 +14,7 @@
 
 #### 基础集成示例
 
-```vue
+```typescript
 <template>
   <div :class="containerClass">
     <h2>{{ title }}</h2>
@@ -39,10 +39,7 @@ interface Props {
   buttonText?: string
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  title: '示例标题',
-  buttonText: '点击按钮'
-})
+const { title = '示例标题', buttonText = '点击按钮' } = defineProps<Props>()
 
 // 定义主题对象（响应式）
 const theme = ref({
@@ -102,6 +99,15 @@ const buttonClass = css({
   }
 })()
 
+const cardClass = css({
+  backgroundColor: themeProxy.colors.surface,
+  padding: themeProxy.spacing.md,
+  marginTop: themeProxy.spacing.md,
+  borderRadius: themeProxy.borderRadius.md,
+  border: `1px solid ${themeProxy.colors.border}`,
+  color: themeProxy.colors.text
+})()
+
 // 主题切换函数
 const toggleTheme = () => {
   const isDark = theme.value.colors.background === '#ffffff'
@@ -109,6 +115,9 @@ const toggleTheme = () => {
   const newTheme = isDark ? {
     colors: {
       primary: '#0d6efd',
+      secondary: '#6c757d',
+      success: '#198754',
+      danger: '#dc3545',
       background: '#1a1a1a',
       surface: '#2d2d2d',
       text: '#ffffff',
@@ -120,6 +129,9 @@ const toggleTheme = () => {
   } : {
     colors: {
       primary: '#007bff',
+      secondary: '#6c757d',
+      success: '#28a745',
+      danger: '#dc3545',
       background: '#ffffff',
       surface: '#f8f9fa',
       text: '#212529',
