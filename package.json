@@ -1,0 +1,37 @@
+{
+  "name": "@whl1024/cssinjs",
+  "version": "1.0.0",
+  "description": "一个轻量级、高性能的CSS-in-JS库，专为现代前端开发设计",
+  "author": "whl1024",
+  "license": "MIT",
+  "keywords": ["css", "css-in-js", "styling", "theme", "typescript","cssinjs"],
+  "homepage": "https://github.com/whl1024/cssinjs#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/whl1024/cssinjs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/whl1024/cssinjs/issues"
+  },
+  "type": "module",
+  "files": [
+    "dist",
+    "types"
+  ],
+  "main": "./dist/cssinjs.umd.cjs",
+  "module": "./dist/cssinjs.js",
+  "types": "./types/index.d.ts",
+  "exports": {
+    "types": "./types/index.d.ts",
+    "import": "./dist/cssinjs.js",
+    "require": "./dist/cssinjs.umd.cjs"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build"
+  },
+  "devDependencies": {
+    "typescript": "~5.9.2",
+    "vite": "^7.1.5"
+  }
+}
