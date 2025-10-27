@@ -267,18 +267,87 @@ export function normalizeValue(value: string): string {
 }
 
 /**
+ * 检查是否为简单对象（仅包含基础类型的对象）
+ * 
+ * @param obj 要检查的对象
+ * @returns 如果是简单对象返回true
+ */
+function isSimpleObject(obj: any): boolean {
+  if (!obj || typeof obj !== 'object' || Array.isArray(obj)) {
+    return false
+  }
+  
+  for (const value of Object.values(obj)) {
+    const type = typeof value
+    if (type !== 'string' && type !== 'number' && type !== 'boolean' && value !== null && value !== undefined) {
+      return false
+    }
+  }
+  
+  return true
+}
+
+/**
+ * 快速哈希简单对象
+ * 
+ * 针对简单对象的优化哈希算法，性能更好
+ * 
+ * @param data 数据对象
+ * @param options 选项对象
+ * @returns 哈希字符串
+ */
+function fastHash(data: any, options?: any): string {
+  const keys = Object.keys(data).sort()
+  let hash = 0
+  
+  for (const key of keys) {
+    const value = String(data[key])
+    const str = `${key}:${value}`
+    
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i)
+      hash = ((hash << 5) - hash) + char
+      hash = hash & hash // 转换为32位整数
+    }
+  }
+  
+  if (options) {
+    const optKeys = Object.keys(options).sort()
+    for (const key of optKeys) {
+      const value = String(options[key])
+      const str = `${key}:${value}`
+      
+      for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i)
+        hash = ((hash << 5) - hash) + char
+        hash = hash & hash
+      }
+    }
+  }
+  
+  return Math.abs(hash).toString(36)
+}
+
+/**
  * 创建缓存键
  * 
  * 根据输入数据生成用于缓存的唯一键
+ * 优化版本：对简单对象使用快速哈希，对复杂对象使用JSON序列化
  * 
  * @param data 要生成缓存键的数据
+ * @param options 可选的配置对象
  * @returns 缓存键字符串
  * 
  * @example
  * createCacheKey({ color: 'red', fontSize: 16 }) // 返回: 哈希字符串
  */
 export function createCacheKey(data: any, options?: any): string {
-  // 简单的字符串化 + 哈希生成
+  // 对于简单对象，使用快速哈希
+  if (isSimpleObject(data) && (!options || isSimpleObject(options))) {
+    return fastHash(data, options)
+  }
+  
+  // 复杂对象使用 JSON 序列化
   const dataStr = JSON.stringify(data, Object.keys(data).sort())
   const optionsStr = options ? JSON.stringify(options, Object.keys(options).sort()) : ''
   return hashString(dataStr + optionsStr)

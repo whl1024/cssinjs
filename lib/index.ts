@@ -19,7 +19,10 @@ export {
   getCacheInfo,
   hasStyle,
   hasAnimation,
-  destroy
+  destroy,
+  mergeStyles,
+  composeClasses,
+  conditionalCompose
 } from './css'
 
 // 导出CSS变量相关功能
@@ -39,6 +42,10 @@ export type {
   CSSOptions,
   StyleCreateOptions
 } from './types'
+
+// 导出错误相关
+export { CSSInJSError, ErrorCode } from './errors'
+export type { ErrorCodeType } from './errors'
 
 // 导出枚举
 export { StyleInsertionMode } from './types'

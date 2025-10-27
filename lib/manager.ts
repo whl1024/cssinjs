@@ -161,10 +161,22 @@ export class StyleManager {
     
     try {
       // 合并配置
+      // 逻辑：
+      // 1. 如果 className 不为空且用户未指定 classNamePrefix，则 classNamePrefix 默认为空
+      // 2. 如果 className 为空或同时为空，则 classNamePrefix 默认为 'css'
+      let defaultPrefix: string
+      if (options?.className && options?.classNamePrefix === undefined) {
+        // className 不为空且用户未指定前缀，默认为空
+        defaultPrefix = ''
+      } else {
+        // 其他情况默认为 'css'
+        defaultPrefix = this.config.classNamePrefix || 'css'
+      }
+      
       const finalOptions = {
         classNamePrefix: options?.classNamePrefix !== undefined 
           ? options.classNamePrefix 
-          : (this.config.classNamePrefix || 'css'),
+          : defaultPrefix,
         className: options?.className,
         enableCSSVariables: options?.enableCSSVariables ?? true
       }
@@ -585,6 +597,28 @@ export class StyleManager {
     
     const cacheKey = createCacheKey(keyframes)
     return this.animationCache.has(cacheKey)
+  }
+
+  /**
+   * 重置样式管理器
+   * 
+   * 清空所有缓存和统计信息，但保留配置和解析器实例
+   * 主要用于测试环境
+   */
+  reset(): void {
+    this.styleCache.clear()
+    this.animationCache.clear()
+    this.injectedRules.clear()
+    
+    this.stats = {
+      totalStyles: 0,
+      cacheHits: 0,
+      cacheMisses: 0,
+      injectionTime: 0,
+      lastCleanup: Date.now()
+    }
+    
+    safeLog('样式管理器已重置')
   }
 
   /**

@@ -14,11 +14,11 @@ import { createCard } from './components/card'
 import { createThemeSelector, renderThemeSelector as renderThemeSelectorFromComponent, updateThemeButtons } from './components/theme-selector'
 
 // 配置库
-configure({
-  classNamePrefix: 'ui',
-  enableCache: true,
-  developmentMode: true
-})
+// configure({
+//   classNamePrefix: 'ui',
+//   enableCache: true,
+//   developmentMode: true
+// })
 
 // 注入全局样式
 injectGlobal({

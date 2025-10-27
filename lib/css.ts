@@ -10,6 +10,7 @@
  */
 
 import { StyleManager } from './manager'
+import { CSSInJSError, ErrorCode, handleStyleError } from './errors'
 import type {
   StyleDefinition,
   KeyframesDefinition,
@@ -82,7 +83,11 @@ export function css<T = any>(
       // 如果是函数，则调用函数获取样式对象
       if (typeof styleDefinition === 'function') {
         if (params === undefined) {
-          throw new Error('动态样式函数需要传入参数')
+          throw new CSSInJSError(
+            '动态样式函数需要传入参数',
+            ErrorCode.MISSING_PARAMS,
+            { styleDefinition }
+          )
         }
         styles = styleDefinition(params)
       } else {
@@ -92,18 +97,23 @@ export function css<T = any>(
       
       // 验证样式对象
       if (!styles || typeof styles !== 'object') {
-        throw new Error('无效的样式对象')
+        throw new CSSInJSError(
+          '无效的样式对象',
+          ErrorCode.INVALID_STYLE_OBJECT,
+          { styles, params }
+        )
       }
       
       // 创建样式并返回类名
       return styleManager.createStyle(styles, options)
       
     } catch (error) {
-      // 在开发环境中输出错误信息
-      console.error('[CSS-in-JS] 创建样式失败:', error)
-      
-      // 返回一个默认类名，避免应用崩溃
-      return 'css-error'
+      const config = styleManager.getConfig()
+      return handleStyleError(
+        error,
+        `${config.classNamePrefix || 'css'}-error`,
+        config.developmentMode
+      )
     }
   }
 }
@@ -148,13 +158,21 @@ export function keyframes(keyframes: KeyframesDefinition): string {
   try {
     // 验证关键帧对象
     if (!keyframes || typeof keyframes !== 'object') {
-      throw new Error('无效的关键帧对象')
+      throw new CSSInJSError(
+        '无效的关键帧对象',
+        ErrorCode.INVALID_KEYFRAMES,
+        { keyframes }
+      )
     }
     
     // 检查是否有有效的关键帧
     const keyframeKeys = Object.keys(keyframes)
     if (keyframeKeys.length === 0) {
-      throw new Error('关键帧对象不能为空')
+      throw new CSSInJSError(
+        '关键帧对象不能为空',
+        ErrorCode.INVALID_KEYFRAMES,
+        { keyframes }
+      )
     }
     
     // 获取样式管理器并创建动画
@@ -162,8 +180,13 @@ export function keyframes(keyframes: KeyframesDefinition): string {
     return styleManager.createKeyframes(keyframes)
     
   } catch (error) {
-    console.error('[CSS-in-JS] 创建动画失败:', error)
-    return 'anim-error'
+    const styleManager = StyleManager.getInstance()
+    const config = styleManager.getConfig()
+    return handleStyleError(
+      error,
+      'anim-error',
+      config.developmentMode
+    )
   }
 }
 
@@ -538,5 +561,109 @@ export function destroy(): void {
     styleManager.destroy()
   } catch (error) {
     console.error('[CSS-in-JS] 销毁失败:', error)
+  }
+}
+
+/**
+ * 合并多个样式对象
+ * 
+ * 将多个CSS属性对象合并为一个，后面的对象会覆盖前面的同名属性
+ * 
+ * @param styles 多个CSS属性对象
+ * @returns 合并后的样式对象
+ * 
+ * @example
+ * const baseStyle = { padding: 16, margin: 8 }
+ * const colorStyle = { color: 'red', backgroundColor: 'blue' }
+ * const merged = mergeStyles(baseStyle, colorStyle)
+ * // 结果: { padding: 16, margin: 8, color: 'red', backgroundColor: 'blue' }
+ * 
+ * @example
+ * // 与 css 函数配合使用
+ * const button = css(mergeStyles(
+ *   { padding: 16, borderRadius: 4 },
+ *   { backgroundColor: 'blue', color: 'white' }
+ * ))
+ */
+export function mergeStyles(...styles: CSSProperties[]): CSSProperties {
+  return Object.assign({}, ...styles)
+}
+
+/**
+ * 组合多个样式类名
+ * 
+ * 将多个样式函数的返回值（类名）组合成一个空格分隔的字符串
+ * 
+ * @param styleFns 多个样式函数
+ * @returns 返回组合后的类名字符串
+ * 
+ * @example
+ * const button = css({ padding: 16 })
+ * const primary = css({ backgroundColor: 'blue' })
+ * const large = css({ fontSize: 18 })
+ * 
+ * const combined = composeClasses(button, primary, large)
+ * const className = combined() // 'css-abc123 css-def456 css-ghi789'
+ * 
+ * @example
+ * // 在 React 中使用
+ * <button className={composeClasses(buttonStyle, primaryStyle)()}>
+ *   Click me
+ * </button>
+ */
+export function composeClasses(...styleFns: Array<() => string>): () => string {
+  return () => styleFns.map(fn => fn()).filter(Boolean).join(' ')
+}
+
+/**
+ * 条件样式组合
+ * 
+ * 根据条件对象决定应用哪些样式，返回组合后的类名
+ * 
+ * @param baseStyle 基础样式函数（始终应用）
+ * @param conditions 条件样式映射对象
+ * @returns 返回条件组合函数
+ * 
+ * @example
+ * const button = css({ padding: 16, border: 'none' })
+ * const primaryStyle = css({ backgroundColor: 'blue', color: 'white' })
+ * const disabledStyle = css({ opacity: 0.5, cursor: 'not-allowed' })
+ * const largeStyle = css({ padding: 24, fontSize: 18 })
+ * 
+ * const getButtonClass = conditionalCompose(button, {
+ *   primary: primaryStyle,
+ *   disabled: disabledStyle,
+ *   large: largeStyle
+ * })
+ * 
+ * // 使用
+ * const className = getButtonClass({ 
+ *   primary: true, 
+ *   disabled: false, 
+ *   large: true 
+ * })
+ * // 结果: 'css-base css-primary css-large'
+ * 
+ * @example
+ * // 在 React 组件中使用
+ * function Button({ primary, disabled, large, children }) {
+ *   const className = getButtonClass({ primary, disabled, large })
+ *   return <button className={className}>{children}</button>
+ * }
+ */
+export function conditionalCompose<T extends Record<string, boolean>>(
+  baseStyle: () => string,
+  conditions: Record<keyof T, () => string>
+): (activeConditions: T) => string {
+  return (activeConditions: T) => {
+    const classes = [baseStyle()]
+    
+    for (const [key, styleFn] of Object.entries(conditions)) {
+      if (activeConditions[key]) {
+        classes.push(styleFn())
+      }
+    }
+    
+    return classes.filter(Boolean).join(' ')
   }
 }
