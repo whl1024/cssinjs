@@ -1,6 +1,13 @@
 # cssinjs
 
+[![npm version](https://img.shields.io/npm/v/@whl1024/cssinjs.svg)](https://www.npmjs.com/package/@whl1024/cssinjs)
+[![npm downloads](https://img.shields.io/npm/dm/@whl1024/cssinjs.svg)](https://www.npmjs.com/package/@whl1024/cssinjs)
+[![license](https://img.shields.io/npm/l/@whl1024/cssinjs.svg)](https://github.com/whl1024/cssinjs/blob/main/LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
+
 一个轻量级、高性能的CSS-in-JS库，专为现代前端开发设计。具有零运行时开销、完整的TypeScript支持、样式缓存优化等特性。
+
+> 📦 **[在 NPM 上查看](https://www.npmjs.com/package/@whl1024/cssinjs)**
 
 ## ✨ 特性
 
@@ -77,7 +84,6 @@ cssinjs/
 │   ├── utils.ts         # 工具函数（性能优化）
 │   └── errors.ts        # 错误处理模块（新增）✨
 └── docs/                # 详细文档
-    └── optimization-changelog.md  # 优化更新日志（新增）✨
 ```
 
 ## 🔗 相关链接

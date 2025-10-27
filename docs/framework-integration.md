@@ -1,5 +1,7 @@
 # 框架集成
 
+[![npm version](https://img.shields.io/npm/v/@whl1024/cssinjs.svg)](https://www.npmjs.com/package/@whl1024/cssinjs)
+
 本文档展示如何将 cssinjs 库与各种前端框架集成。
 
 ## 🖖 Vue.js 集成

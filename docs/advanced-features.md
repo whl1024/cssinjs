@@ -1,5 +1,7 @@
 # 高级功能
 
+[![npm version](https://img.shields.io/npm/v/@whl1024/cssinjs.svg)](https://www.npmjs.com/package/@whl1024/cssinjs)
+
 本文档介绍 cssinjs 库的高级功能和用法。
 
 ## 🎯 样式组合与工厂函数

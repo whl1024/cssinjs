@@ -1,5 +1,9 @@
 # API 参考
 
+[![npm version](https://img.shields.io/npm/v/@whl1024/cssinjs.svg)](https://www.npmjs.com/package/@whl1024/cssinjs)
+
+> 📦 **[NPM 包地址](https://www.npmjs.com/package/@whl1024/cssinjs)** | 📚 [完整文档](https://github.com/whl1024/cssinjs#readme)
+
 本文档提供 cssinjs 库的完整 API 参考。
 
 ## 📦 核心 API

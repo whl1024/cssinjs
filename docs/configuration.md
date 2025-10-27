@@ -1,5 +1,7 @@
 # 配置选项
 
+[![npm version](https://img.shields.io/npm/v/@whl1024/cssinjs.svg)](https://www.npmjs.com/package/@whl1024/cssinjs)
+
 本文档介绍 cssinjs 库的配置选项和工具函数。
 
 ## ⚙️ 基础配置

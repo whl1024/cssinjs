@@ -1,5 +1,9 @@
 # 入门指南
 
+[![npm version](https://img.shields.io/npm/v/@whl1024/cssinjs.svg)](https://www.npmjs.com/package/@whl1024/cssinjs)
+
+> 📦 **[在 NPM 上安装](https://www.npmjs.com/package/@whl1024/cssinjs)**: `npm install @whl1024/cssinjs`
+
 本指南将帮助您快速上手 cssinjs 库的基本功能。
 
 ## 🎯 核心概念
