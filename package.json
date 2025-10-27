@@ -1,6 +1,6 @@
 {
   "name": "@whl1024/cssinjs",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "一个轻量级、高性能的CSS-in-JS库，专为现代前端开发设计",
   "author": "whl1024",
   "license": "MIT",
